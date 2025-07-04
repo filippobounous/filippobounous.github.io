@@ -13,7 +13,9 @@
 </head>
 <body>
   <h1>Filippo Bounous</h1>
-  <p><em id="job-title">Derivatives Trader at Amius</em></p>
+  <p>
+    <em id="job-title">Derivatives Trader at Amius</em>
+  </p>
   <p>Contact: <a href="mailto:filibounous@gmail.com">filibounous@gmail.com</a></p>
   <ul>
     <li><a href="https://github.com/filippobounous">GitHub</a></li>
@@ -30,43 +32,43 @@
   </ul>
 
   <script>
-    async function updateTitle() {
-      const title = document.getElementById('job-title');
-      title.textContent = 'Derivatives Trader at Amius';
+    const DEFAULT_TITLE = 'Derivatives Trader at Amius';
+    const LINKEDIN_URL = 'https://r.jina.ai/https://www.linkedin.com/in/filippobounous';
+    const STARRED_URL = 'https://api.github.com/users/filippobounous/starred';
+
+    const updateTitle = async () => {
+      const el = document.getElementById('job-title');
+      el.textContent = DEFAULT_TITLE;
       try {
-        const resp = await fetch('https://r.jina.ai/https://www.linkedin.com/in/filippobounous');
+        const resp = await fetch(LINKEDIN_URL);
         const text = await resp.text();
         const match = text.match(/\"headline\":\"([^\"]+)\"/);
-        if (match) {
-          title.textContent = match[1];
-        }
+        if (match) el.textContent = match[1];
       } catch (err) {
         console.error('Could not fetch headline', err);
       }
-    }
+    };
 
-    async function loadStarred() {
+    const loadProjects = async () => {
       const list = document.getElementById('projects-list');
       try {
-        const resp = await fetch('https://api.github.com/users/filippobounous/starred');
+        const resp = await fetch(STARRED_URL);
         const repos = await resp.json();
-        repos.forEach(repo => {
+        repos.forEach(({ html_url, name, description }) => {
           const li = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = repo.html_url;
-          link.textContent = repo.name;
-          li.appendChild(link);
-          if (repo.description) {
-            li.appendChild(document.createTextNode(' \u2013 ' + repo.description));
-          }
+          li.innerHTML = `<a href="${html_url}">${name}</a>`;
+          if (description) li.append(` \u2013 ${description}`);
           list.appendChild(li);
         });
       } catch (err) {
         console.error('Could not load starred repos', err);
       }
-    }
-    updateTitle();
-    loadStarred();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateTitle();
+      loadProjects();
+    });
   </script>
 </body>
 </html>
