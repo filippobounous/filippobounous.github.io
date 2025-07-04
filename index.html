@@ -8,29 +8,65 @@
     pre { background: #f7f7f7; padding: 1rem; }
     ul { list-style: none; padding: 0; }
     li { margin: 0.5rem 0; }
+    ul.projects { list-style: disc; padding-left: 1.5rem; }
   </style>
 </head>
 <body>
   <h1>Filippo Bounous</h1>
-  <p><em>Your Title Here at Your Company Here</em></p>
-  <p>Contact: <a href="mailto:filippo@example.com">filippo@example.com</a></p>
+  <p><em id="job-title">Derivatives Trader at Amius</em></p>
+  <p>Contact: <a href="mailto:filibounous@gmail.com">filibounous@gmail.com</a></p>
   <ul>
     <li><a href="https://github.com/filippobounous">GitHub</a></li>
     <li><a href="https://www.linkedin.com/in/filippobounous">LinkedIn</a></li>
-    <li><a href="cv.pdf">Download CV</a> (Last updated: 2025-07-04)</li>
   </ul>
 
-  <p>Please contact me if you need the most recent version.</p>
+  <p>Please email me if you'd like the latest version of my CV.</p>
 
-  <h2>Academic Experience</h2>
-  <p>Placeholder for degree and school.</p>
+  <h2>Experience</h2>
+  <p>For academic and professional details, please see my <a href="https://www.linkedin.com/in/filippobounous">LinkedIn profile</a>.</p>
 
   <h2>Projects</h2>
-  <pre>
-Project,Description,Link
-SampleApp,A demo application,https://github.com/filippo/sampleapp
-ResearchTool,A set of research scripts,https://github.com/filippo/research-tool
-PersonalWebsite,The site you're looking at,https://filippobounous.github.io
-  </pre>
+  <ul class="projects" id="projects-list">
+  </ul>
+
+  <script>
+    async function updateTitle() {
+      const title = document.getElementById('job-title');
+      title.textContent = 'Derivatives Trader at Amius';
+      try {
+        const resp = await fetch('https://r.jina.ai/https://www.linkedin.com/in/filippobounous');
+        const text = await resp.text();
+        const match = text.match(/\"headline\":\"([^\"]+)\"/);
+        if (match) {
+          title.textContent = match[1];
+        }
+      } catch (err) {
+        console.error('Could not fetch headline', err);
+      }
+    }
+
+    async function loadStarred() {
+      const list = document.getElementById('projects-list');
+      try {
+        const resp = await fetch('https://api.github.com/users/filippobounous/starred');
+        const repos = await resp.json();
+        repos.forEach(repo => {
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = repo.html_url;
+          link.textContent = repo.name;
+          li.appendChild(link);
+          if (repo.description) {
+            li.appendChild(document.createTextNode(' \u2013 ' + repo.description));
+          }
+          list.appendChild(li);
+        });
+      } catch (err) {
+        console.error('Could not load starred repos', err);
+      }
+    }
+    updateTitle();
+    loadStarred();
+  </script>
 </body>
 </html>
